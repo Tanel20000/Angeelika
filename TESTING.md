@@ -1,39 +1,47 @@
-# Angeelika — Prototype Testing
+# Angeelika — Prototype Test Results
 
-## Purpose
+## Summary
 
-This document summarizes selected tests performed during the
-development of the Angeelika phone scam protection prototype.
+Angeelika is an experimental phone-scam protection prototype.
+Initial tests have demonstrated key call-handling functions and
+AI-assisted risk assessment. Detection accuracy has not yet been
+established through systematic testing.
 
-The results describe observations from a development environment.
-They do not establish production readiness or overall detection accuracy.
+## Observed results
 
-## Test observations
-
-| Area | Observation | Status |
+| Test area | Observed result | Status |
 |---|---|---|
-| Telephony | Ringback continued until the Groundwire endpoint answered during a test call. | Tested |
-| Service architecture | Telephony, audio processing and Telegram bot components run as separate services. | Verified on server |
-| Risk assessment | A test involving PIN and Smart-ID context was classified as high risk. | Tested |
-| False positives | A benign conversational context involving transfers was classified as high risk. | Further testing needed |
+| Call handling | Ringback continued until the Groundwire endpoint answered during a test call. | Tested |
+| Suspicious conversation | A test involving PIN and Smart-ID context received a HIGH risk assessment. | Tested |
+| High-risk response | Both the caller and Groundwire call channels were disconnected. Channel removal was verified through the telephony interface. | Technically verified |
+| False positive | A conversation considered benign, involving transfers, received a HIGH risk assessment. | Issue identified |
+| Service operation | Telephony, audio processing and Telegram bot components were running as separate services during server checks. | Verified on server |
+
+## What these results show
+
+- Core call-handling behaviour has been tested in a development environment.
+- The prototype is designed to terminate call channels and send a risk report to Telegram when a high-risk result is reached.
+- The risk assessment can incorrectly classify benign conversation as high risk.
+- The current observations are individual test results, not a measurement of overall detection accuracy.
 
 ## Known limitations
 
-- Risk assessments can produce false positives.
-- Some fraudulent conversations may not be detected.
-- More test scenarios are needed to evaluate consistency and accuracy.
-- The current results are observations from individual tests, not a statistical evaluation.
-- Privacy, reliability and deployment requirements need further assessment.
+- False positives can interrupt legitimate conversations.
+- Suspicious conversations may receive a low-risk assessment or go undetected.
+- A small number of tests cannot establish reliability or detection accuracy.
+- The prototype has not been demonstrated to be production-ready.
+- Privacy, reliability and deployment requirements need further evaluation.
+
+## Next steps
+
+1. Test a wider range of suspicious and benign conversations.
+2. Record the expected result and the actual result for each test.
+3. Investigate false positives and possible missed detections.
+4. Repeat the same tests after changes to check whether behaviour improves.
+5. Evaluate results across a larger test set before making claims about accuracy.
 
 ## Security and privacy
 
 This document contains high-level test observations only.
-It excludes call recordings, transcripts containing personal data,
-credentials, server configuration and internal detection rules.
-
-## Next steps
-
-- Expand the test set with both suspicious and benign conversations.
-- Record expected and observed outcomes.
-- Investigate false positives and refine the system.
-- Repeat tests after changes and compare results.
+It excludes phone numbers, personal data, call recordings,
+credentials, private server configuration and internal detection rules.
