@@ -3,72 +3,86 @@
 ## Overview
 
 Angeelika is an experimental prototype for AI-assisted phone scam
-risk assessment. It combines telephony infrastructure, speech
-processing and AI-based analysis.
+risk assessment. It combines telephony, audio processing, speech
+recognition and AI-based risk analysis.
 
-## High-level workflow
+## Architecture diagram
 
-    Incoming phone call
-            |
-            v
-    Asterisk telephony server
-            |
-            v
-    Audio processing service
-            |
-            v
-    Speech-to-text
-            |
-            v
-    AI-based risk assessment
-            |
-            v
-    Risk report or notification
-            |
-            v
-    Telegram interface
+```mermaid
+flowchart TD
+    A["Incoming phone call"] --> B["No answer within 10 seconds"]
+    B --> C["Call-forwarding service"]
+    C --> D["WaveCom SIP trunk"]
+    D --> E["Asterisk PBX"]
 
-The Telegram conversational bot runs as a separate service.
+    E --> F["Groundwire phone endpoint"]
+    E --> G["Angeelika ARI application"]
+
+    G --> H["AudioSocket audio stream"]
+    H --> I["Speech-to-text: Whisper"]
+    I --> J["AI-assisted risk assessment"]
+
+    J --> K{"Risk assessment"}
+    K -->|LOW| L["Call continues"]
+    K -->|HIGH| M["Call channels terminated"]
+    M --> N["Risk report sent to Telegram"]
+
+    G --> O["Logs and diagnostics"]
+    J --> O
+```
 
 ## Main components
 
 ### Telephony
-Asterisk provides telephony infrastructure and handles integration
-with SIP-based telephony.
 
-### Audio processing
-A dedicated Python service receives audio for processing and
-coordinates speech recognition and subsequent analysis.
+Asterisk handles SIP telephony and coordinates the call flow.
+The call-forwarding service routes unanswered calls to the SIP
+telephony infrastructure.
 
-### Speech recognition
-A speech-to-text model converts speech into text for further analysis.
+### Call handling
 
-### AI-based analysis
-An AI model evaluates conversation text for potential indicators of
-telephone fraud. The assessment is experimental and may produce
-false positives or miss suspicious conversations.
+The Groundwire endpoint is used to receive the call.
+The Angeelika ARI application coordinates call handling and
+audio-processing actions.
+
+### Audio processing and speech recognition
+
+Audio is streamed to a dedicated processing service through
+AudioSocket. Whisper converts speech into text for analysis.
+
+### Risk assessment
+
+An AI-assisted assessment evaluates recognized text for potential
+indicators of telephone fraud. A LOW result allows the call to
+continue. A HIGH result triggers termination of the associated
+call channels and a Telegram risk report.
+
+The assessment is experimental and can produce false positives
+or miss suspicious conversations.
 
 ### Telegram
-Telegram supports notifications and a separate conversational bot.
+
+Telegram receives risk reports. A separate Telegram bot provides
+a conversational interface.
 
 ## Engineering work
 
 - Python application development
 - Linux server administration and service management
-- Integration of external AI APIs
-- SIP telephony and Asterisk integration
-- Speech processing and AI-based analysis
+- Asterisk and SIP telephony integration
+- Audio streaming and speech-to-text integration
+- AI API integration and risk assessment
 - Troubleshooting and iterative testing
 - Evaluation of detection quality and false positives
 
 ## Limitations
 
-This is a prototype under active development. Reliability, detection
-quality, privacy requirements and deployment readiness require
-continued evaluation.
+This is a prototype under active development. Detection quality,
+reliability, privacy requirements and deployment readiness require
+further evaluation.
 
 ## Security
 
-This public document describes the architecture at a high level.
-It excludes credentials, private configuration, personal data,
-call recordings and internal detection rules.
+This public document describes the system at a high level.
+It excludes phone numbers, credentials, private configuration,
+personal data, call recordings and internal detection rules.
