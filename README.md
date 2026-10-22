@@ -34,13 +34,15 @@ Unlike passive analytics tools that process data *after* a security breach occur
 ---
 
 ## 📊 Prototype Workflow & Decision Tree
-1. **Ingress:** An inbound call hits the WaveCom SIP trunk and routes to Asterisk PBX.
-2. **Interception:** The ARI application captures the call, controls the ringtone, and opens an AudioSocket stream upon pickup.
-3. **Processing:** The stream is piped to Groq Whisper for instant Estonian transcription.
-4. **Analysis:** The LLM evaluates risk patterns (e.g., requests for PIN codes, banking phrases, urgency tactics).
+
+1. **User Control & Conditional Routing:** When an unknown or suspicious number calls the user's mobile device, the user can choose to let the call forward into the Asterisk infrastructure rather than answering directly.
+2. **Ingress & Interception:** The forwarded call hits the WaveCom SIP trunk and routes to the Asterisk PBX. The ARI application takes control, manages the virtual ringtone/queue state, and opens an AudioSocket stream.
+3. **Processing:** As the caller begins speaking, the audio stream is piped live to Groq Whisper for instant Estonian transcription.
+4. **Analysis:** The LLM continuously evaluates the live transcription text for vishing risk patterns (e.g., requests for PIN codes, banking phrases, urgency tactics, or impersonation).
 5. **Mitigation Tree:**
-   * **LOW Risk:** Monitoring continues; call proceeds uninterrupted.
-   * **HIGH Risk:** The ARI app executes an active tear-down, severing the call channels instantly. Logs are dumped, and a Telegram report containing the *risk, reason, and evidence* is dispatched.
+   * **LOW Risk / Safe Call:** Monitoring continues, and the call can proceed uninterrupted or be safely interaction-logged.
+   * **HIGH Risk (Active Tear-down):** The ARI application instantly cuts the call channel, protecting the user from further social engineering. A detailed Telegram report containing the *risk level, justification, and raw text evidence* is instantly dispatched.
+
 
 ---
 
