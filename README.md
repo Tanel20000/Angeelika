@@ -35,9 +35,9 @@ Unlike passive analytics tools that process data *after* a security breach occur
 
 ## 📊 Prototype Workflow & Decision Tree
 
-1. **User Control & Conditional Routing:** When an unknown or suspicious number calls the user's mobile device, the user can choose to let the call forward into the Asterisk infrastructure rather than answering directly.
-2. **Ingress & Interception:** The forwarded call hits the WaveCom SIP trunk and routes to the Asterisk PBX. The ARI application takes control, manages the virtual ringtone/queue state, and opens an AudioSocket stream.
-3. **Processing:** As the caller begins speaking, the audio stream is piped live to Groq Whisper for instant Estonian transcription.
+1. **Carrier-Level Conditional Routing:** When an unknown or suspicious number calls the user's mobile device, if the user leaves it unanswered for 10 seconds, the mobile carrier automatically executes a *Conditional Call Forwarding on No Answer* rule.
+2. **Ingress & Interception:** The call is forwarded directly to a dedicated landline DID mapped to a WaveCom SIP trunk, which routes it straight into the Asterisk PBX infrastructure. The ARI application takes control, manages the virtual ringtone/queue state, and opens an AudioSocket stream upon pickup.
+3. **Processing:** As the caller begins speaking to the automated system, the audio stream is piped live to Groq Whisper for instant Estonian transcription.
 4. **Analysis:** The LLM continuously evaluates the live transcription text for vishing risk patterns (e.g., requests for PIN codes, banking phrases, urgency tactics, or impersonation).
 5. **Mitigation Tree:**
    * **LOW Risk / Safe Call:** Monitoring continues, and the call can proceed uninterrupted or be safely interaction-logged.
