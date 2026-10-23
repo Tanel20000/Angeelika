@@ -42,6 +42,6 @@ established through systematic testing.
 
 ## Security and privacy
 
-This document contains high-level test observations only.
+This document contains test observations only.
 It excludes phone numbers, personal data, call recordings,
 credentials, private server configuration and internal detection rules.
